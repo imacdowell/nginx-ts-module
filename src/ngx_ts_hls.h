@@ -41,6 +41,7 @@ typedef struct {
 
     ngx_ts_hls_segment_t  *segs;
     ngx_uint_t             nsegs;
+    ngx_uint_t             nsegs_alloc;  /* Allocated capacity for segs array */
     ngx_uint_t             seg;
     uint64_t               seg_dts;
 
@@ -70,6 +71,10 @@ typedef struct {
 ngx_ts_hls_t *ngx_ts_hls_create(ngx_ts_hls_conf_t *conf, ngx_ts_stream_t *ts,
     ngx_str_t *name);
 char *ngx_ts_hls_set_slot(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
+
+/* Dynamic segment array management functions */
+ngx_ts_hls_segment_t *ngx_ts_hls_allocate_array(ngx_pool_t *pool, size_t size, ngx_uint_t elements);
+ngx_ts_hls_segment_t *ngx_ts_hls_expand_array(ngx_pool_t *pool, ngx_ts_hls_segment_t **segs, size_t size, ngx_uint_t *elements);
 
 
 #endif /* _NGX_TS_HLS_H_INCLUDED_ */

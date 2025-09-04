@@ -819,6 +819,49 @@ ngx_ts_hls_delete_file(ngx_tree_ctx_t *ctx, ngx_str_t *path)
 }
 
 
+/* Dynamic segment array management functions */
+ngx_ts_hls_segment_t *
+ngx_ts_hls_allocate_array(ngx_pool_t *pool, size_t size, ngx_uint_t elements)
+{
+    ngx_ts_hls_segment_t *segs;
+
+    segs = ngx_pcalloc(pool, size * elements);
+    if (segs == NULL) {
+        return NULL;
+    }
+
+    return segs;
+}
+
+
+ngx_ts_hls_segment_t *
+ngx_ts_hls_expand_array(ngx_pool_t *pool, ngx_ts_hls_segment_t **segs, size_t size, ngx_uint_t *elements)
+{
+    ngx_ts_hls_segment_t *new_segs;
+    ngx_uint_t            new_elements;
+
+    new_elements = *elements + 100;
+    
+    new_segs = ngx_pcalloc(pool, size * new_elements);
+    if (new_segs == NULL) {
+        return NULL;
+    }
+
+    /* Copy existing data to new array */
+    if (*segs != NULL) {
+        ngx_memcpy(new_segs, *segs, size * (*elements));
+        
+        /* Note: In nginx pool allocation, we can't free individual allocations */
+        /* The old memory will be freed when the pool is destroyed */
+    }
+
+    *elements = new_elements;
+    *segs = new_segs;
+
+    return new_segs;
+}
+
+
 char *
 ngx_ts_hls_set_slot(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
