@@ -162,7 +162,8 @@ ngx_ts_hls_pat_handler(ngx_ts_hls_t *hls)
 
     ts = hls->ts;
 
-    ngx_log_debug0(NGX_LOG_DEBUG_CORE, ts->log, 0, "ts hls pat");
+    ngx_log_debug1(NGX_LOG_DEBUG_CORE, ts->log, 0, "ts hls pat segments=%ui", hls->conf->nsegs);
+    //ngx_log_debug0(NGX_LOG_DEBUG_CORE, ts->log, 0, "ts hls pat");
 
     hls->nvars = ts->nprogs;
     hls->vars = ngx_pcalloc(ts->pool,
@@ -845,7 +846,7 @@ ngx_ts_hls_set_slot(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     max_seg = 10000;
     analyze = 0;
     max_size = 16 * 1024 * 1024;
-    nsegs = 6;
+    nsegs = 1000;
     clean = 1;
 
     for (i = 1; i < cf->args->nelts; i++) {
@@ -977,6 +978,9 @@ ngx_ts_hls_set_slot(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     }
 
     hls->path->name = path;
+
+    ngx_conf_log_error(	NGX_LOG_EMERG, cf, 0,
+			"conf number of hls segments: \"%ui\"", nsegs);
 
     hls->min_seg = min_seg;
     hls->max_seg = max_seg;
